@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Internal estimate {{ number }}</title>
+{% set footer_label = "INTERNAL, DO NOT SHARE  |  " ~ number %}
+{% include "_base_css.html" %}</head>
+<body>
+<div class="head"><div><h1>Internal project estimate</h1><div class="muted">{{ number }} &middot; {{ status }} &middot; generated {{ generated.strftime("%d %b %Y") }}</div></div>
+  <div style="text-align:right"><strong class="neg">INTERNAL ONLY</strong><div class="small muted">{{ business.name }}</div></div></div>
+
+<h2>Project and client</h2>
+<table class="meta"><tr><td class="muted" style="width:32mm">Project</td><td>{{ project.name }}{% if project.type %} ({{ project.type }}){% endif %}</td></tr>
+<tr><td class="muted">Complexity</td><td>{{ project.complexity }}</td></tr><tr><td class="muted">Pricing method</td><td>{{ project.pricing_method }}</td></tr>
+<tr><td class="muted">Client</td><td>{{ client.name }}{% if client.company %}, {{ client.company }}{% endif %}{% if client.email %} &middot; {{ client.email }}{% endif %}</td></tr></table>
+{% if project.description %}<p class="small">{{ project.description }}</p>{% endif %}
+
+<h2>Features: client price against internal cost</h2>
+<table><thead><tr><th>Feature</th><th>Developer</th><th class="r">Hours</th><th class="r">Client price</th><th class="r">Internal cost</th></tr></thead><tbody>
+{% for i in items %}<tr><td>{{ i.name }}{% if i.quantity > 1 %} x{{ i.quantity }}{% endif %}</td><td>{{ i.developer }}</td><td class="r">{{ i.hours }}</td><td class="r">{{ i.client_price|inr }}</td><td class="r">{{ i.internal_cost|inr }}</td></tr>{% endfor %}</tbody></table>
+<p class="small muted">Internal development cost uses the developer allocation below when it has hours. Per-feature internal costs are used only when there is no allocation.</p>
+
+<h2>Developer allocation</h2>
+<table><thead><tr><th>Work category</th><th>Developer</th><th class="r">Hours</th><th class="r">Hourly rate</th><th class="r">Cost</th></tr></thead><tbody>
+{% for a in allocation %}<tr><td>{{ a.category }}</td><td>{{ a.developer }}</td><td class="r">{{ a.hours }}</td><td class="r">{{ a.rate|inr }}</td><td class="r">{{ a.cost|inr }}</td></tr>{% else %}<tr><td colspan="5" class="muted">No allocation entered.</td></tr>{% endfor %}</tbody></table>
+<table style="margin-top:3mm"><thead><tr><th>Workload by developer</th><th class="r">Hours</th></tr></thead><tbody>
+{% for w in workload %}<tr><td>{{ w.name }}</td><td class="r">{{ w.hours }}</td></tr>{% endfor %}</tbody></table>
+<p class="small">Total {{ totals.hours }} hours. Estimated delivery {{ totals.days }} working days.</p>
+
+<h2>Expenses</h2>
+<table><thead><tr><th>Expense</th><th>Category</th><th>Type</th><th>Billing</th><th class="r">Amount</th></tr></thead><tbody>
+{% for e in expenses %}<tr><td>{{ e.name }}</td><td>{{ e.category }}</td><td>{{ e.type }}</td><td>{{ e.billing }}</td><td class="r">{{ e.amount|inr }}</td></tr>{% else %}<tr><td colspan="5" class="muted">None.</td></tr>{% endfor %}</tbody></table>
+<p class="small muted">Recurring monthly: client-billed {{ totals.recurring_client|inr }}, absorbed {{ totals.recurring_absorbed|inr }}.</p>
+
+<h2>Cost and profit</h2>
+<table class="totals">
+<tr><td>Development price</td><td class="r">{{ totals.development_price|inr }}</td></tr>
+{% if totals.deployment_cost > 0 %}<tr><td>Deployment &amp; setup expenses (client-paid)</td><td class="r">{{ totals.deployment_cost|inr }}</td></tr>{% endif %}
+<tr><td>Subtotal (client)</td><td class="r">{{ totals.subtotal|inr }}</td></tr>
+<tr><td>Discount</td><td class="r">-{{ totals.discount|inr }}</td></tr>
+<tr><td>Taxable amount</td><td class="r">{{ totals.taxable|inr }}</td></tr>
+<tr><td>GST ({{ totals.gst_rate }}%)</td><td class="r">{{ totals.gst|inr }}</td></tr>
+<tr><td><strong>Final client price</strong></td><td class="r"><strong>{{ totals.final|inr }}</strong></td></tr>
+<tr><td colspan="2">&nbsp;</td></tr>
+<tr><td>Internal development cost</td><td class="r">{{ totals.internal_dev|inr }}</td></tr>
+<tr><td>Internal (absorbed) expenses</td><td class="r">{{ totals.internal_expenses|inr }}</td></tr>
+<tr><td>Client-paid deployment expenses</td><td class="r">{{ totals.deployment_cost|inr }}</td></tr>
+<tr><td>Contingency{% if totals.billed_contingency > 0 %} (also billed to client){% endif %}</td><td class="r">{{ totals.contingency|inr }}</td></tr>
+<tr><td><strong>Total internal cost</strong></td><td class="r"><strong>{{ totals.total_cost|inr }}</strong></td></tr>
+<tr><td>Target margin</td><td class="r">{{ totals.target_margin }}</td></tr>
+<tr><td>Estimated profit</td><td class="r {{ 'neg' if totals.profit_val is not none and totals.profit_val < 0 else 'pos' }}">{{ totals.profit }}</td></tr>
+<tr><td>Profit margin</td><td class="r">{{ totals.margin }}</td></tr>
+<tr><td>Suggested development price</td><td class="r">{{ totals.suggested_dev }}</td></tr>
+<tr><td>Suggested client price</td><td class="r">{{ totals.suggested }}</td></tr>
+<tr><td>Annual maintenance</td><td class="r">{{ totals.maintenance_annual|inr }}</td></tr>
+<tr><td>First-year estimate</td><td class="r">{{ totals.first_year|inr }}</td></tr>
+</table>
+{% if totals.maintenance_monthly > 0 %}<p class="small">Maintenance: {{ totals.maintenance_monthly|inr }} per month, billed separately.</p>{% endif %}
+{% for w in warnings %}<p class="warn small">Warning: {{ w }}</p>{% endfor %}
+</body></html>

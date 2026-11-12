@@ -1,0 +1,18 @@
+<style>
+  @page { size: A4; margin: 18mm 15mm 20mm 15mm;
+    @bottom-center { content: "{{ footer_label }}  |  Page " counter(page) " of " counter(pages); font-size: 8pt; color: #6b7280; } }
+  * { box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, "Noto Sans", sans-serif; font-size: 10pt; color: #111827; line-height: 1.45; margin: 0; }
+  h1 { font-size: 22pt; margin: 0 0 2mm; letter-spacing: -0.5pt; }
+  h2 { font-size: 11pt; text-transform: uppercase; letter-spacing: 0.8pt; color: #c2410c; margin: 8mm 0 2.5mm; border-bottom: 0.6pt solid #e5e7eb; padding-bottom: 1.5mm; page-break-after: avoid; }
+  table { width: 100%; border-collapse: collapse; page-break-inside: auto; }
+  tr { page-break-inside: avoid; }
+  th { text-align: left; font-size: 8pt; text-transform: uppercase; letter-spacing: 0.5pt; color: #6b7280; padding: 2mm 2mm; border-bottom: 0.8pt solid #111827; }
+  td { padding: 2mm; border-bottom: 0.4pt solid #e5e7eb; vertical-align: top; }
+  .r { text-align: right; white-space: nowrap; } .muted { color: #6b7280; } .small { font-size: 8.5pt; }
+  .head { display: table; width: 100%; } .head > div { display: table-cell; vertical-align: top; }
+  .logo { max-height: 16mm; max-width: 50mm; } .mark { display: inline-block; width: 14mm; height: 14mm; background: #111827; color: #fff; font-weight: 700; font-size: 16pt; text-align: center; line-height: 14mm; border-radius: 2mm; }
+  .meta td { border: 0; padding: 0.6mm 0; } .box { background: #f9fafb; border: 0.6pt solid #e5e7eb; padding: 3mm 4mm; border-radius: 1.5mm; }
+  .totals { width: 90mm; margin-left: auto; } .totals td { border: 0; padding: 1.2mm 2mm; } .totals .grand td { border-top: 1pt solid #111827; font-weight: 700; font-size: 12pt; padding-top: 2.5mm; }
+  .warn { color: #b45309; } .neg { color: #b91c1c; } .pos { color: #15803d; }
+</style>

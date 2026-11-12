@@ -1,0 +1,85 @@
+# =============================================================================
+# Git Ignore Configuration - Freelance Pricing Studio
+# =============================================================================
+
+# --- Environment & Secret Files ---
+.env
+.env.*
+*.env
+*.env.txt
+!.env.example
+*.pem
+*.key
+*.cert
+
+# --- Databases & Local State ---
+*.db
+*.sqlite
+*.sqlite3
+freelance.db
+
+# --- Node & Frontend Build Artifacts ---
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+frontend/build/
+.vite/
+frontend/.vite/
+
+# --- Python & Backend Build / Cache ---
+__pycache__/
+backend/**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+backend/.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# --- Virtual Environments ---
+.venv/
+backend/.venv/
+venv/
+backend/venv/
+env/
+ENV/
+
+# --- Uploads & Temporary Media ---
+uploads/
+backend/uploads/
+test_uploads/
+backend/test_uploads/
+ci_uploads/
+backend/ci_uploads/
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Operating System Files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# --- IDE & Editor Settings ---
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~

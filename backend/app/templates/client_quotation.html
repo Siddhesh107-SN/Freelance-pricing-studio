@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quotation {{ quotation_number }}</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+  @media print {
+    html, body {
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      padding: 0;
+    }
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #ffffff;
+    color: #1f2937;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    line-height: 1.35;
+    font-weight: 400;
+  }
+  .sheet {
+    width: 100%;
+    page-break-inside: avoid;
+  }
+  .font-bold {
+    font-weight: 600;
+  }
+  .muted {
+    color: #6b7280;
+  }
+  .divider {
+    height: 0;
+    border: 0;
+    border-top: 0.5pt solid #e5e7eb;
+    margin: 3mm 0;
+  }
+
+  /* 1. Header */
+  .head {
+    display: table;
+    width: 100%;
+  }
+  .head-left {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .head-right {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: right;
+  }
+  .brand-block {
+    display: flex;
+    align-items: center;
+    gap: 3mm;
+  }
+  .brand-logo {
+    max-height: 13mm;
+    max-width: 38mm;
+    object-fit: contain;
+    border-radius: 1.5mm;
+  }
+  .brand-mark {
+    width: 11mm;
+    height: 11mm;
+    border-radius: 2mm;
+    background: {{ business.brand_color or "#111827" }};
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 13pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 11mm;
+    text-align: center;
+  }
+  .brand-name {
+    font-size: 13pt;
+    font-weight: 600;
+    letter-spacing: -0.3pt;
+    color: {{ business.brand_color or "#111827" }};
+  }
+  .brand-tagline {
+    font-size: 7.5pt;
+    color: #6b7280;
+    margin-top: 0.3mm;
+  }
+  .doc-title {
+    font-size: 14pt;
+    font-weight: 600;
+    letter-spacing: 0.5pt;
+    color: {{ business.brand_color or "#111827" }};
+    margin: 0 0 1mm 0;
+    text-transform: uppercase;
+  }
+  .meta-row {
+    font-size: 8pt;
+    margin-bottom: 0.4mm;
+  }
+  .meta-lbl {
+    color: #6b7280;
+  }
+  .meta-val {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  /* 2. Client & Project */
+  .info-bar {
+    display: table;
+    width: 100%;
+  }
+  .billed-to {
+    display: table-cell;
+    vertical-align: top;
+    width: 55%;
+  }
+  .project-box {
+    display: table-cell;
+    vertical-align: top;
+    text-align: right;
+    width: 45%;
+  }
+  .sec-heading {
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5pt;
+    font-weight: 600;
+    color: {{ business.brand_color or "#111827" }};
+    margin-bottom: 1mm;
+  }
+  .client-name {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: #111827;
+  }
+  .client-detail {
+    font-size: 8pt;
+    color: #4b5563;
+    margin-top: 0.3mm;
+  }
+  .project-pill {
+    display: inline-block;
+    padding: 1.5mm 3mm;
+    background: #f9fafb;
+    border-radius: 1.5mm;
+    border: 0.4pt solid #f3f4f6;
+  }
+  .project-name {
+    font-weight: 600;
+    color: #111827;
+  }
+  .project-sep {
+    color: #9ca3af;
+    margin: 0 1.5mm;
+  }
+  .project-type {
+    color: #6b7280;
+  }
+
+  /* 4. Line Items */
+  .line-items {
+    margin: 0.5mm 0;
+  }
+  .item-row {
+    display: flex;
+    align-items: baseline;
+    padding: 1.6mm 0;
+  }
+  .item-main {
+    max-width: 65%;
+  }
+  .item-title {
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: #111827;
+  }
+  .item-desc {
+    font-size: 7pt;
+    color: #6b7280;
+    margin-top: 0.2mm;
+    line-height: 1.25;
+  }
+  .dotted-leader {
+    flex: 1;
+    border-bottom: 1pt dotted #d1d5db;
+    margin: 0 3mm;
+    min-width: 15mm;
+    position: relative;
+    top: -2px;
+  }
+  .item-price {
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: #111827;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  /* 5. Totals */
+  .totals-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5mm;
+  }
+  .totals-table {
+    width: 68mm;
+    border-collapse: collapse;
+  }
+  .totals-table td {
+    padding: 0.8mm 0;
+  }
+  .tot-lbl {
+    font-size: 8pt;
+    color: #4b5563;
+  }
+  .tot-val {
+    font-size: 8pt;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+  }
+  .grand-row td {
+    padding-top: 1.5mm;
+    border-top: 0.6pt solid #111827;
+  }
+  .grand-row .tot-lbl {
+    font-size: 9.5pt;
+    font-weight: 600;
+    color: {{ business.brand_color or "#111827" }};
+  }
+  .grand-row .tot-val {
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: {{ business.brand_color or "#111827" }};
+  }
+  .amount-words {
+    text-align: right;
+    font-size: 7pt;
+    color: #4b5563;
+    font-style: italic;
+    margin-top: 0.8mm;
+  }
+
+  /* 6. Payment Schedule */
+  .sched-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5mm;
+  }
+  .sched-table th {
+    text-align: left;
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.4pt;
+    color: #6b7280;
+    padding-bottom: 0.8mm;
+    border-bottom: 0.5pt solid #e5e7eb;
+    font-weight: 600;
+  }
+  .sched-table td {
+    padding: 1.2mm 0;
+    font-size: 7.5pt;
+    border-bottom: 0.3pt solid #f3f4f6;
+  }
+  .sched-table tr:last-child td {
+    border-bottom: 0;
+  }
+  .r { text-align: right; }
+
+  /* 7. Included / Not Included */
+  .scope-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 6mm;
+    margin-top: 0.5mm;
+  }
+  .scope-col {
+    flex: 1;
+  }
+  .bullet-list {
+    margin: 0;
+    padding-left: 3.5mm;
+    font-size: 7pt;
+    color: #4b5563;
+  }
+  .bullet-list li {
+    margin-bottom: 0.6mm;
+    line-height: 1.25;
+  }
+
+  /* 8. Footer */
+  .footer-wrap {
+    display: table;
+    width: 100%;
+    margin-top: 1mm;
+  }
+  .footer-left {
+    display: table-cell;
+    vertical-align: middle;
+    width: 38%;
+  }
+  .footer-center {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    width: 34%;
+  }
+  .footer-right {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: right;
+    width: 28%;
+  }
+  .qr-flex {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+  }
+  .qr-code {
+    width: 16mm;
+    height: 16mm;
+    display: inline-block;
+  }
+  .qr-code svg {
+    width: 100%;
+    height: 100%;
+  }
+  .upi-text {
+    font-size: 6.8pt;
+    color: #4b5563;
+    line-height: 1.35;
+  }
+  .upi-action {
+    font-weight: 600;
+    color: #111827;
+  }
+  .thanks-note {
+    font-size: 8.5pt;
+    font-weight: 600;
+    color: {{ business.brand_color or "#111827" }};
+    margin-bottom: 0.5mm;
+  }
+  .business-contact {
+    font-size: 6.8pt;
+    color: #6b7280;
+    line-height: 1.35;
+  }
+  .sig-line-mark {
+    width: 34mm;
+    border-bottom: 0.6pt solid #9ca3af;
+    margin-left: auto;
+    margin-bottom: 1mm;
+  }
+  .sig-caption {
+    font-size: 7.2pt;
+    font-weight: 600;
+    color: #111827;
+  }
+  .sig-biz {
+    font-size: 6.8pt;
+    color: #6b7280;
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <!-- 1. HEADER -->
+  <div class="head">
+    <div class="head-left">
+      <div class="brand-block">
+        {% if business.logo %}
+        <img class="brand-logo" src="{{ business.logo }}" alt="{{ business.name }}">
+        {% else %}
+        <div class="brand-mark">{{ business.name[:1] }}</div>
+        {% endif %}
+        <div class="brand-text">
+          <div class="brand-name">{{ business.name }}</div>
+          {% if business.tagline %}
+          <div class="brand-tagline">{{ business.tagline }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="head-right">
+      <div class="doc-title">Quotation</div>
+      <div class="meta-row"><span class="meta-lbl">Number :</span> <span class="meta-val">{{ quotation_number }}</span></div>
+      <div class="meta-row"><span class="meta-lbl">Issued :</span> <span class="meta-val">{{ issue_date.strftime("%d %b %Y") }}</span></div>
+      <div class="meta-row"><span class="meta-lbl">Valid until :</span> <span class="meta-val">{{ expiry_date.strftime("%d %b %Y") }}</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 2. BILLED TO & 3. PROJECT -->
+  <div class="info-bar">
+    <div class="billed-to">
+      <div class="sec-heading">Billed To</div>
+      {% if client.name %}
+      <div class="client-name">{{ client.name }}</div>
+      {% endif %}
+      {% if client.company %}
+      <div class="client-detail">{{ client.company }}</div>
+      {% endif %}
+      {% if client.email %}
+      <div class="client-detail">{{ client.email }}</div>
+      {% endif %}
+      {% if client.phone %}
+      <div class="client-detail">{{ client.phone }}</div>
+      {% endif %}
+    </div>
+    <div class="project-summary">
+      <div class="sec-heading">Project</div>
+      <div class="project-pill">
+        <span class="project-name">{{ project.name }}</span>
+        {% if project.type %}
+        <span class="project-sep">&middot;</span>
+        <span class="project-type">{{ project.type }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 4. LINE ITEMS -->
+  <div class="sec-heading">Deliverables &amp; Scope</div>
+  <div class="line-items">
+    {% for item in line_items %}
+    <div class="item-row">
+      <div class="item-main">
+        <div class="item-title">{{ item.title }}</div>
+        <div class="item-desc">{{ item.description }}</div>
+      </div>
+      <div class="dotted-leader"></div>
+      <div class="item-price">{{ item.price|inr }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 5. TOTALS -->
+  <div class="totals-container">
+    <div>
+      <table class="totals-table">
+        <tr>
+          <td class="tot-lbl">Subtotal</td>
+          <td class="tot-val">{{ subtotal|inr }}</td>
+        </tr>
+        {% if discount_amount > 0 %}
+        <tr>
+          <td class="tot-lbl">Discount</td>
+          <td class="tot-val">-{{ discount_amount|inr }}</td>
+        </tr>
+        {% endif %}
+        {% if gst_applies %}
+        <tr>
+          <td class="tot-lbl">GST ({{ gst_rate|round|int }}%)</td>
+          <td class="tot-val">{{ gst_amount|inr }}</td>
+        </tr>
+        {% endif %}
+        <tr class="grand-row">
+          <td class="tot-lbl">Grand Total</td>
+          <td class="tot-val">{{ final_price|inr }}</td>
+        </tr>
+      </table>
+      <div class="amount-words"><span class="meta-lbl">In words :</span> {{ amount_in_words }}</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 6. PAYMENT SCHEDULE -->
+  <div class="sec-heading">Payment Schedule</div>
+  <table class="sched-table">
+    <thead>
+      <tr>
+        <th>Milestone</th>
+        <th class="r">Share</th>
+        <th class="r">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in payment_schedule %}
+      <tr>
+        <td>{{ m.name }}</td>
+        <td class="r">{{ m.percentage }}</td>
+        <td class="r font-bold">{{ m.amount|inr }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="divider"></div>
+
+  <!-- 7. INCLUDED / NOT INCLUDED -->
+  <div class="scope-grid">
+    <div class="scope-col">
+      <div class="sec-heading">Included</div>
+      <ul class="bullet-list">
+        {% for b in included %}
+        <li>{{ b }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="scope-col">
+      <div class="sec-heading">Not Included</div>
+      <ul class="bullet-list">
+        {% for b in not_included %}
+        <li>{{ b }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 8. FOOTER -->
+  <div class="footer-wrap">
+    <div class="footer-left">
+      <div class="qr-flex">
+        {% if qr_svg %}
+        <div class="qr-code">{{ qr_svg|safe }}</div>
+        {% endif %}
+        <div class="upi-text">
+          <div class="upi-action">Scan to Pay Advance</div>
+          {% if business.upi_id %}
+          <div><span class="meta-lbl">UPI ID :</span> {{ business.upi_id }}</div>
+          {% endif %}
+          <div><span class="meta-lbl">Advance :</span> {{ advance_amount|inr }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-center">
+      <div class="thanks-note">Thank you for your business</div>
+      <div class="business-contact">
+        {% if business.email %}<div>{{ business.email }}</div>{% endif %}
+        {% if business.phone %}<div>{{ business.phone }}</div>{% endif %}
+        {% if business.website %}<div>{{ business.website }}</div>{% endif %}
+        {% if business.gstin %}<div><span class="meta-lbl">GSTIN :</span> {{ business.gstin }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="footer-right">
+      <div class="sig-line-mark"></div>
+      <div class="sig-caption">Authorised Signatory</div>
+      <div class="sig-biz">{{ business.name }}</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
